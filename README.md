@@ -29,7 +29,77 @@ STEP-4: Multiply the two matrices to obtain the cipher text of length three.
 STEP-5: Combine all these groups to get the complete cipher text.
 
 ## PROGRAM 
+```
+def char_to_num(c):
+    return ord(c) - 65
+
+def num_to_char(n):
+    return chr(n + 65)
+
+# 2x2 matrix multiplication mod 26
+def multiply(mat, vec):
+    return [
+        (mat[0][0]*vec[0] + mat[0][1]*vec[1]) % 26,
+        (mat[1][0]*vec[0] + mat[1][1]*vec[1]) % 26
+    ]
+
+# --- Hill Encryption ---
+def hill_encrypt(plain, key):
+    plain = plain.replace(" ", "").upper()
+    if len(plain) % 2 == 1:
+        plain += "X"
+
+    cipher = ""
+    for i in range(0, len(plain), 2):
+        p = [char_to_num(plain[i]), char_to_num(plain[i+1])]
+        c = multiply(key, p)
+        cipher += num_to_char(c[0]) + num_to_char(c[1])
+    return cipher
+
+# --- Finding inverse of 2x2 matrix mod 26 ---
+def inverse_key(key):
+    det = (key[0][0]*key[1][1] - key[0][1]*key[1][0]) % 26
+
+    # multiplicative inverse of determinant mod 26
+    for x in range(26):
+        if (det * x) % 26 == 1:
+            det_inv = x
+            break
+
+    # adjugate matrix
+    inv = [
+        [( key[1][1] * det_inv) % 26, (-key[0][1] * det_inv) % 26],
+        [(-key[1][0] * det_inv) % 26, ( key[0][0] * det_inv) % 26]
+    ]
+    return inv
+
+# --- Hill Decryption ---
+def hill_decrypt(cipher, key):
+    inv_key = inverse_key(key)
+    cipher = cipher.upper()
+    plain = ""
+    for i in range(0, len(cipher), 2):
+        c = [char_to_num(cipher[i]), char_to_num(cipher[i+1])]
+        p = multiply(inv_key, c)
+        plain += num_to_char(p[0]) + num_to_char(p[1])
+    return plain
+# Example
+key = [[3, 3],
+       [2, 5]]
+
+plaintext = "HELLO"
+cipher = hill_encrypt(plaintext, key)
+decrypted = hill_decrypt(cipher, key)
+
+print("Plaintext :", plaintext)
+print("Ciphertext:", cipher)
+print("Decrypted :", decrypted)
+```
 
 ## OUTPUT
 
+<img width="469" height="164" alt="image" src="https://github.com/user-attachments/assets/aaca8209-5c31-434a-a8be-071d689eb8a8" />
+
+
 ## RESULT
+Thus the implementation of hill cipher had been executed successfully.
