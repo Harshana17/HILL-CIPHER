@@ -30,75 +30,50 @@ STEP-5: Combine all these groups to get the complete cipher text.
 
 ## PROGRAM 
 ```
-def char_to_num(c):
-    return ord(c) - 65
+#include <stdio.h>
+#include <string.h>
 
-def num_to_char(n):
-    return chr(n + 65)
+int main()
+{
+    char plaintext[50];
+    int key[2][2];
+    int i, p1, p2, c1, c2;
 
-# 2x2 matrix multiplication mod 26
-def multiply(mat, vec):
-    return [
-        (mat[0][0]*vec[0] + mat[0][1]*vec[1]) % 26,
-        (mat[1][0]*vec[0] + mat[1][1]*vec[1]) % 26
-    ]
+    printf("Enter the plaintext (uppercase letters only): ");
+    scanf("%s", plaintext);
 
-# --- Hill Encryption ---
-def hill_encrypt(plain, key):
-    plain = plain.replace(" ", "").upper()
-    if len(plain) % 2 == 1:
-        plain += "X"
+    printf("Enter the 2x2 key matrix:\n");
+    for(i = 0; i < 2; i++)
+    {
+        scanf("%d %d", &key[i][0], &key[i][1]);
+    }
 
-    cipher = ""
-    for i in range(0, len(plain), 2):
-        p = [char_to_num(plain[i]), char_to_num(plain[i+1])]
-        c = multiply(key, p)
-        cipher += num_to_char(c[0]) + num_to_char(c[1])
-    return cipher
+    if(strlen(plaintext) % 2 != 0)
+    {
+        strcat(plaintext, "X");
+    }
 
-# --- Finding inverse of 2x2 matrix mod 26 ---
-def inverse_key(key):
-    det = (key[0][0]*key[1][1] - key[0][1]*key[1][0]) % 26
+    printf("Cipher text: ");
 
-    # multiplicative inverse of determinant mod 26
-    for x in range(26):
-        if (det * x) % 26 == 1:
-            det_inv = x
-            break
+    for(i = 0; i < strlen(plaintext); i += 2)
+    {
+        p1 = plaintext[i] - 'A';
+        p2 = plaintext[i + 1] - 'A';
 
-    # adjugate matrix
-    inv = [
-        [( key[1][1] * det_inv) % 26, (-key[0][1] * det_inv) % 26],
-        [(-key[1][0] * det_inv) % 26, ( key[0][0] * det_inv) % 26]
-    ]
-    return inv
+        c1 = (key[0][0] * p1 + key[0][1] * p2) % 26;
+        c2 = (key[1][0] * p1 + key[1][1] * p2) % 26;
 
-# --- Hill Decryption ---
-def hill_decrypt(cipher, key):
-    inv_key = inverse_key(key)
-    cipher = cipher.upper()
-    plain = ""
-    for i in range(0, len(cipher), 2):
-        c = [char_to_num(cipher[i]), char_to_num(cipher[i+1])]
-        p = multiply(inv_key, c)
-        plain += num_to_char(p[0]) + num_to_char(p[1])
-    return plain
-# Example
-key = [[3, 3],
-       [2, 5]]
+        printf("%c%c", c1 + 'A', c2 + 'A');
+    }
 
-plaintext = "HELLO"
-cipher = hill_encrypt(plaintext, key)
-decrypted = hill_decrypt(cipher, key)
-
-print("Plaintext :", plaintext)
-print("Ciphertext:", cipher)
-print("Decrypted :", decrypted)
+    return 0;
+}
 ```
 
 ## OUTPUT
 
-<img width="469" height="164" alt="image" src="https://github.com/user-attachments/assets/aaca8209-5c31-434a-a8be-071d689eb8a8" />
+<img width="1708" height="904" alt="image" src="https://github.com/user-attachments/assets/33777d76-64ec-48de-a20c-fa94c1e8a054" />
+
 
 
 ## RESULT
